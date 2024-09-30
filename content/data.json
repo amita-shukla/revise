@@ -1,0 +1,1577 @@
+{
+  "categories_size": 7,
+  "categories_list": [
+    "Performance",
+    "Scalability",
+    "Deployment",
+    "Reliability",
+    "Tech Stack",
+    "Security",
+    "Fix the System Questions"
+  ],
+  "categories": {
+    "Performance": [
+      {
+        "id": 1,
+        "question": "areas for improvement for performance?",
+        "answer": "latency for sequential requests:\n- network latency\n- memory latency\n- disk latency\n- CPU latency\nconcurrency\n- locking: pessimistic and optimistic\n- coherence\ncaching data\n- static and dynamic data caching",
+        "pic": ""
+      },
+      {
+        "id": 2,
+        "question": "what all to do optimze a system for performance?",
+        "answer": "- at web server level: connection pool, persistent connections, response compression, efficient encoding, web content caching, ssl session caching, session caching\n- at application server level: thread pool and size, db connection pool, efficient locking, query optimization, asynchronous logging, sequential and batch IO, data caching\n- at db/storage level: indexing, normalization/denormalization, buffer/page caching",
+        "pic": ""
+      },
+      {
+        "id": 3,
+        "question": "What is tail latency? How is this metric beneficial?",
+        "answer": "It's the highest percentile latency, requests that have response time greater than 99.xxx%.\nthese are an indication of degrading performance when the workload increases",
+        "pic": ""
+      },
+      {
+        "id": 4,
+        "question": "explain TCP connection",
+        "answer": "a reliable network connection is established using TCP. \n3-way handshake process happens before the actial data transfer takes place",
+        "pic": ""
+      },
+      {
+        "id": 5,
+        "question": "explain SSL/TLS",
+        "answer": "SSL: SecureSocketLayer, it encrypts the link and data transferred between client and server\nhandshake: \nphase 1: client hello and server hello\nphase 2: server sends certificate and server-exchange-key\nphase 3: clients sends its certificate and client-excahange-key\nphase 4: change cipher\nIt issues an SSL certificate, public cryptography\nTLS is upgraded version of the same",
+        "pic": ""
+      },
+      {
+        "id": 6,
+        "question": "how to reduce connection latency",
+        "answer": "time taken to create a connection can't be affected\n- create a connection pool and reuse the connections, instead of client to create new connection, use a connection from the pool\n- use persistent connections.",
+        "pic": ""
+      },
+      {
+        "id": 7,
+        "question": "what is persistent connection",
+        "answer": "a browser creates persistent connection, which is not destroyed immediately after a call\nkeeps the same conenction over 5-6 consecutive calls\na client library using http connections must create persistent connection",
+        "pic": ""
+      },
+      {
+        "id": 8,
+        "question": "how to reduce data transfer overhead",
+        "answer": "- reduce the size of data\n- avoid data transfer at all by **caching**\n- efficient data formats and compression: use grpc/thrift instead of http for intranet connections, which transfers data in binary format, though there is overhead to compress data, but it's not that costly compared to data transfer",
+        "pic": ""
+      },
+      {
+        "id": 10,
+        "question": "what is ssl session caching",
+        "answer": "caching when we create repeated SSL conenctions",
+        "pic": ""
+      },
+      {
+        "id": 11,
+        "question": "what latency issues are caused due to memory?",
+        "answer": "- garbage collection: there are algorithms optimized for special purposes, when the memory is low the GC works more aggresively, hence reducing performance\n- large heap memory: gc has to sweep through larger memory, hence reducing performance\n- low heap memory: the OS/application needs to write to harddisk, swapping causes performance problems\n- buffer memory on database: any write operation is done in buffer memory, so it's utilization is critical. so if low memory allocated or inefficient schema, the throughput reduces",
+        "pic": ""
+      },
+      {
+        "id": 12,
+        "question": "how to reduce latency issues due to memory",
+        "answer": "- obvious: control unnecessary allocation of objects. reduce codebase size as it is loaded on RAM. the more instructions are there, the more the processor is burdened.\n- multiple smaller processes are better than 1 big process (really?): distribute a process in a cluster with multiple JVMs, each dealing with smaller amount of data\n- garbage collection algorithm; 2 kinds: 1st- suitable for batch processes, much more efficient, but there are pauses, it stops the process and does GC, then it resumes. \nthe 2nd- runs alongside the process, there will be some pauses but they're small, suited for live requests.\n- for database memory: have adequate amount of memory. Normalization leads to good utilization of memory as we avoid duplicate data. (we do denormalization to avoid complex joins)",
+        "pic": ""
+      },
+      {
+        "id": 13,
+        "question": "what is disk latency? in what forms it happens",
+        "answer": "disc IO is the slowest form of IO. we have below kinds:\n- logging is a special case which actually is efficient\n- web content files: a web application requires files like js, css, image files from disk\n- database: data comes from hdd or is saved on harddisk",
+        "pic": ""
+      },
+      {
+        "id": 14,
+        "question": "how to reduce disk latency from logging?",
+        "answer": "In case of logging we sequentially write over a log file, which is more efficient than random I/O. \n- To reduce context switches we can batch these writes.\n- asynchronous logging: data to be logged is transferred to a dedicated thread. The main thread doesn't need to leave the CPU for logging -> more processor utilization -> higher performance.\none disadvantage of async logging is that if the main thread crashes the last few statements may not get logged.\n",
+        "pic": ""
+      },
+      {
+        "id": 15,
+        "question": "how to reduce latency due to web content files (static files)?",
+        "answer": "- caching: if a file has been fetched, it should not be fetched again and again. To do so, have a Reverse Proxy that stores all static content. whereas all dynamic content if catered by application. \ne.g. varnish, nginx as reverse proxt",
+        "pic": ""
+      },
+      {
+        "id": 16,
+        "question": "how to reduce db disk access?",
+        "answer": "- cache read only data in the application itself\n- schema optimization: do a load test, if disk access is a lot, we can denormalize data. otherwise prefer normalization as it saves db memory, data write\n- indexes: create index on the filter criteria, db would know the data location and can access it instead of going for a full table scan\n- query optimization: write in such a way that minimum data is processed.\n- at hardware level: use SSDs, disks optimized in high IOPS, RAID architecture (reads data parallely)",
+        "pic": ""
+      },
+      {
+        "id": 17,
+        "question": "what is context switching",
+        "answer": "suppose 2 processes are running on a CPU, and 1st one is occupying CPU and process 2 is waiting, suppose p1 creates a network call or IO. So CPU evicts it to start executing P2.\nthis happens with a delay because it needs to save state for P1 and load P2 from PCB(Process Control Block). This is called context switching ",
+        "pic": ""
+      },
+      {
+        "id": 18,
+        "question": "What is Process Control Block",
+        "answer": "stores all info about a process",
+        "pic": ""
+      },
+      {
+        "id": 19,
+        "question": "how to reduce CPU latency?",
+        "answer": "- efficient algos and queries\n- use batch I/O: batching saves, network, memory, CPU latency\n- use Async I/O for logging: log in a separate thread\n- use single threaded model: used in javascript, node.js, nginx\n- have apt number of threads in thread pool: too many leads to context switching\n- use virtual env so apps have there own threads and memory and lesses sharing",
+        "pic": ""
+      },
+      {
+        "id": 20,
+        "question": "what's a web server",
+        "answer": "a web server is basically an infinite loop that accepts concurrent requests, and then processes it",
+        "pic": ""
+      },
+      {
+        "id": 21,
+        "question": "what's a web server's multi threaded request response model?",
+        "answer": "a traditional web server uses a multi threaded request response model. In this model: \n- an infinite loop runs waiting for requests from client \n- there's a thread pool, when a request comes it gets assigned a thread from that thread pool\n- each thread processes the request, whether blocking or non blocking, and returns response to the web server which returns it to the client.\n- if threads are consumed, the remaining requests need to wait\ndisadvantages:\n- if there are a lot of concurrent requests, a lot of threds are created, and memory is eaten up faster.",
+        "pic": "https://res.cloudinary.com/practicaldev/image/fetch/s--SV2CrLU5--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/2euqwipkatw4w5ar6twx.png"
+      },
+      {
+        "id": 22,
+        "question": "what's a node js's single threaded model?",
+        "answer": "it runs an 'event loop', does 'asynchronous processing on a single thread'\n- all requests go to an event queue\n- if it's non blocking, the request is picked by event loop and it gets proecssed\n- if it's blocking, only then a thread is invoked and used to process it\nadvantage:\nless threads are used, and less context switching",
+        "pic": "https://miro.medium.com/v2/1*evOcy9n3vslkDt0Mj8mBYw.jpeg"
+      },
+      {
+        "id": 23,
+        "question": "what's an L1 and L2 cache",
+        "answer": "these are levels of CPU cache. CPU Cache Memory is a type of temporary data storage located on the processor. It is used to increase the processing efficiency of the CPU by holding small, often-requested bits of data ready to be accessed at high speed. Cache memory is comprised of different levels of storage. These levels are commonly referred to as L1, L2, L3, and occasionally L4, and vary in location, speed, and size.\n\n- Cache memory is both extremely fast, often between 10 and 100 times faster than DRAM, and physically close to the processor cores. Modern, fast processors aren't slowed down by having to make requests for data from relatively slow system memory because they can get the data from the cache instead.\n\n- L1 is low capacity but extremely fast, L2 is slower but has more storage space, and L3 is the slowest of the three but also usually has the biggest storage capacity.",
+        "pic": ""
+      },
+      {
+        "id": 24,
+        "question": "concurrency v/s parallelism",
+        "answer": "concurrency: 2 processes take turns processing over a cpu\nparallelism: 2 processes execute simultaneously over 2 cores\nanalogy: \nConcurrency is two lines of customers ordering from a single cashier (lines take turns ordering); \nParallelism is two lines of customers ordering from two cashiers (each line gets its own cashier)",
+        "pic": ""
+      },
+      {
+        "id": 25,
+        "question": "amdahl's law",
+        "answer": "as we introduce parallelism, the performance improvement is dependent on the sequential part of the system.\nand a process switches to sequential flow (maybe due to a lock), the thread needs to queue itself due to shared resource\nthe performance graph flattens due to queuing",
+        "pic": ""
+      },
+      {
+        "id": 26,
+        "question": "gunther's universal scalability law",
+        "answer": "the performance of a system may decrease in a parallem processing system due to coherance\ncoherance happens when a variable shared needs to maintain same value across all threads\nit combines the effect of queuing and coherance",
+        "pic": ""
+      },
+      {
+        "id": 27,
+        "question": "what amdahl's and gunther's laws teach us for concurrency",
+        "answer": "in order to make a system highly concurrent, we need to minimize queueing and coherence effect\nqueueing: serial execution within code\ncoherence: caching of variables and their syncronizatoin across multiple processor caches",
+        "pic": ""
+      },
+      {
+        "id": 28,
+        "question": "how to determine thread pool size for a server that manages requests?",
+        "answer": "we do a load test to determine thread pool size:\n- if we have a lot of wait time (network calls, io calls) then we should increase thread pool size\n- if we have a lot of CPU wait time, then we should decrease thread pool size",
+        "pic": ""
+      },
+      {
+        "id": 29,
+        "question": "relationship between thread pool and connection pool size",
+        "answer": "1:1, each thread should handle one connection. same for db, as there can be transactions happening on a thread which should happen over a single connection",
+        "pic": ""
+      },
+      {
+        "id": 30,
+        "question": "what's thread contention?",
+        "answer": "a contention happens when a thread is waiting for another thread to finish using a resource",
+        "pic": ""
+      },
+      {
+        "id": 31,
+        "question": "what's lock contention?",
+        "answer": "a lock contention happens when multiple threads/processes are trying to access same resource that's locked at the same time",
+        "pic": ""
+      },
+      {
+        "id": 32,
+        "question": "how to reduce contention due to a lock?",
+        "answer": "- reduce the time a lock is acquired: \n  - keep as little code inside synchronized block as possible, \n  - split locks instead of 1 single huge lock,\n  - lock striping (partition data and assign separate log for each partition e.g. concurrent hashmap\n- replace exclusive lock with coordination mechanism:\n  - read-write/stamped locks\n  - use atomic variables using compare and swap mechanism",
+        "pic": ""
+      },
+      {
+        "id": 33,
+        "question": "what is read-write lock?",
+        "answer": "if lock contention is happening, and you see there are reader and writer threads, then you can make writer locks exclusive but reader locks non-exclusive. \nIt's supported in java as ReentrantReadWriteLock and StampedLock ",
+        "pic": "https://stackoverflow.com/questions/11837428/whats-the-difference-between-an-exclusive-lock-and-a-shared-lock"
+      },
+      {
+        "id": 34,
+        "question": "what's a SELECT FOR UPDATE statement in sql",
+        "answer": "It allows you to lock the rows returned by a SELECT query until the entire transaction that query is part of has been committed",
+        "pic": ""
+      },
+      {
+        "id": 35,
+        "question": "pessimistic locking",
+        "answer": "when you lock all the rows before they're updated. we should do this when contention is high",
+        "pic": ""
+      },
+      {
+        "id": 36,
+        "question": "optimistic locking",
+        "answer": "here we do not lock the rows that are to be updated, however, while updating we check if the value of the row is the same when we selected it or not.\nif not, then we retry the select and update again.\nit is called optimistic because we assume that not too many times the transaction would needed to be retried.\nhence this should be done when contention is low to moderate.\nthis gives good performance in that case because we hold locks for a shorter duration.",
+        "pic": ""
+      },
+      {
+        "id": 37,
+        "question": "what's compare and swap mechanism for locks\ne.g. atomic package in java?",
+        "answer": "compare and swap is supported by all modern CPUs\nit is a form of optimistic locking, e.g. \n- we set a counter as i = AtomicInteger(10), then\ni.compareAndSet(10,20)\nso now if the counter has already been set to 20 by another set, this update won't happen.\n- in nosql dbs that don't support transactions we have 'if' keyword where the query executes only if the if clause is satisfied.",
+        "pic": ""
+      },
+      {
+        "id": 38,
+        "question": "what are 4 properties of transaction processing?",
+        "answer": "Atomicity - either the entire transaction happens, or it is aborted\nConsistency - data remains consistent (correct) before and after transaction\nisolation - transaction must happen in isolation with each other, i.e. any write are only visible to other processes when the entire transaction has taken place\ndurability - updates must be stored in non-volatile memory and hence are durable even when system fails.",
+        "pic": ""
+      },
+      {
+        "id": 39,
+        "question": "how deadlocks throttle the performance of the system? ",
+        "answer": "ordering related:\n- 2 threads acquire locks on resources and waiting for release from other resources\n- to relieve these, set a global order of acquiring locks, e.g. lock on x is always acquired before lock on y\nrequest load related\nin a microservice architecture, all threads can be consumed, and one service needs to call another service in order to complete but unable to do so because of shortage of threads",
+        "pic": ""
+      },
+      {
+        "id": 40,
+        "question": "difference between volatile and synchronized in java",
+        "answer": "- volatile only makes sure that the variable is read from main memory and value is maintained across threads\n- synchronized locks the variable as well, so it's less performant as we need to pay locking penalties as well",
+        "pic": ""
+      },
+      {
+        "id": 41,
+        "question": "object cache",
+        "answer": "whatever data we fetch from db we save in object cache, storing db query results by the service",
+        "pic": ""
+      },
+      {
+        "id": 42,
+        "question": "session cache",
+        "answer": "data associated with a user",
+        "pic": ""
+      },
+      {
+        "id": 43,
+        "question": "why can GET requests be cached",
+        "answer": "because they're idempotent, it means the state of system is not changed with it, and making a request multiple times doesn't change the result.\nnot all get request be cached -- if the data changes frequently\nthis is determined using headers: 'cache-control', ETAG: version of a resource",
+        "pic": ""
+      },
+      {
+        "id": 44,
+        "question": "what are the http headers that control caching of a resource in a request?",
+        "answer": "- cache-control: if a resource can be cached : no-cache (must validate everytime), must-revalidate(after max-age), no-store (do not cache), public, private (client cache), max-age\n- ETAG: version of a resource",
+        "pic": ""
+      },
+      {
+        "id": 45,
+        "question": "how do you cache dynamic data?",
+        "answer": "- exclusive cache: each instance (node) of the server has its own cache. this will cause duplication of data in cache as proxy can route the same request to different node each time\n- distributed cache: redis, memcache - higher latency due to extra call made to distributed cache, but can use for large datasets",
+        "pic": ""
+      }
+    ],
+    "Scalability": [
+      {
+        "id": 1,
+        "question": "what is sticky sessions for web servers?",
+        "answer": "when a request first comes, it saves session information in suppose one instance called I1. Then this information is tagged along with the response.\nnext time a request comes, the load balancer can redirect this to the right instance.\npros: better performance as cached info is accessed \ncons: instances/nodes are limited by the memory even if they have more no. of CPUs and/or threads. And these sessions take up memory, limiting no. of sessions,\nreliability, if the node goes down before changes were saved, we get old data from the rest of the nodes.",
+        "pic": ""
+      },
+      {
+        "id": 2,
+        "question": "stateless web applications work?",
+        "answer": "in stateless apps, the session data can be stored in a shared cache such as redis, memcached\nor, session data can be stored on the client side using cookies, but not if the data is large or not user specific",
+        "pic": ""
+      },
+      {
+        "id": 3,
+        "question": "when to choose stateful or stateless",
+        "answer": "goto stateful apps if the latency is a very critical requirement",
+        "pic": ""
+      },
+      {
+        "id": 4,
+        "question": "how replication of service happens in stateless apps?",
+        "answer": "similar to web servers, we can replicate our service layer by having a shared cache.\nhowever, is there is a logic for writing to a shared resource, then we need to manage concurrency between not only threads of a single machine, but across several nodes.\ne.g. we have a file to write to by multiple nodes, we create a lock table in db, and manage locks for each row of the file",
+        "pic": ""
+      },
+      {
+        "id": 5,
+        "question": "database replication (rdbms)",
+        "answer": "we can have master-slave architecture, where we have read replicas sharing read loads, and writes comes to master node and get replicated.\nwe can create backup to promote it as master if master goes down",
+        "pic": ""
+      },
+      {
+        "id": 6,
+        "question": "types of db replication",
+        "answer": "master-slave (master data is replicated to slave, have multiple read replicas)\n- high read scalability\n- high read availability\n- if master goes down, writes not possible until backup takes over\n- no write conflicts\npeer-to-peer (data on both is replicated with each other, multi geography use case, so writes happen with low latency when each node deicated for each location)\n- high read scalability\n- high read write availability\n- transaction ordering issues",
+        "pic": ""
+      },
+      {
+        "id": 7,
+        "question": "ways of doing master slave replication",
+        "answer": "asynchronous\n- low latency writes\n- eventually consistent\n- data loss\nsynchronous (better suitable for backups, so that we don't have data loss)\n- consistent\n- high latency\n- low write availability (even if secondary db goes down, the writes happening from master are disrupted, and those write queries fail)",
+        "pic": ""
+      },
+      {
+        "id": 8,
+        "question": "how to replicate in master master db",
+        "answer": "asynchronous\n- write conflicts (if same record is modified by both instances)\n- high availability (can resume both read and write if a node goes down)",
+        "pic": ""
+      },
+      {
+        "id": 10,
+        "question": "micorservices benefits?",
+        "answer": "specialized services for each module\n- can scale independently\n- independent deployment\n- independent tech stack\ncons:\n- increased complexity\n- where common code goes?",
+        "pic": ""
+      },
+      {
+        "id": 11,
+        "question": "what's the aggregator / gateway service",
+        "answer": "- sits in front of all microservices\n- directs calls to correct service\n- convert protocol: we may use grpc for internal calls and rest of external clients",
+        "pic": ""
+      },
+      {
+        "id": 12,
+        "question": "why to use message queues",
+        "answer": "- when the interfaces are different between 2 servers\n- when we want reliable communication \n- we can offload write load from databases: if there's no mq, we need to scale our db at the same rate as our rate of requests received, else requests in peak hrs get rejected\n- defer the calls coming in for the peak period to MQs",
+        "pic": ""
+      },
+      {
+        "id": 13,
+        "question": "where to use asynchronous processing (MQs)",
+        "answer": "where the write operation is the main operation, and do not need to return info as such",
+        "pic": ""
+      },
+      {
+        "id": 14,
+        "question": "vertical partitioning of dbs",
+        "answer": "just like in microservices, divide the database handling each component, e.g. order, catalog, inventory etc\n- can't do transactions ranging over different domains",
+        "pic": ""
+      },
+      {
+        "id": 15,
+        "question": "horizontal partitioning",
+        "answer": "range partitioning\nhash partitioning",
+        "pic": ""
+      },
+      {
+        "id": 16,
+        "question": "range partiioning",
+        "answer": "each node contains a certain range of records\nif we increases no of nodes, need to divide by range again\ncannot do acid transactions on all records because they're in different nodes, need to handle that as part of application logic\nhence this partitioning is not popular in RDBMSs because they're used for their ACID features\nnosql dbs partition on their own, some rdbms also provide auto partitioning\nuse when we are doing searches / select+ where based on a range",
+        "pic": ""
+      },
+      {
+        "id": 17,
+        "question": "hash partitioning",
+        "answer": "compute hash of id and apply % n, n=no of nodes\ncostly to do range query, need to run a single query for each id falling in range, e.g. where id > 10 and id <20, so 9 queries run separately",
+        "pic": ""
+      },
+      {
+        "id": 19,
+        "question": "overall process of scaling a system?",
+        "answer": "- Services: divide monolith into services so we can scale them independently\n- Replication: replicate the services (or the entire application perhaps) so that there are more workers. There are 2 choices: stateful or stateless\n  - stateful: DBs are always stateful, web apps can be stateful as well\n  - stateless: web apps can be stateless as well, better choice as they're more scalable\n- vertical partitioning: microservices can partition the entire functionality\n- async: can improve handling of write loads better, and can handle peak loads better\n- caching: not only reduces latency, but also reduces load on system hence makes it more scalable\n- horizontal partitioning: last resort is that the db becomes the ultimate bottleneck, so horizontally partition the data",
+        "pic": ""
+      },
+      {
+        "id": 20,
+        "question": "what load balancer does?",
+        "answer": "provides a single IP address for a component",
+        "pic": ""
+      },
+      {
+        "id": 21,
+        "question": "discovery service",
+        "answer": "a service that notes all the services and their instances running in a system\n- when an instance starts, it registers itself with the discovery service\n- keep sending a heartbeat for each service\n- if using kubernetes, then we may not need it",
+        "pic": ""
+      },
+      {
+        "id": 22,
+        "question": "how to discover a load balancer?",
+        "answer": "for an external load balancer: clients use DNS to know the IP \nfor internal lbs: an internal registry or some config",
+        "pic": ""
+      },
+      {
+        "id": 23,
+        "question": "Hardware Based LoadBalancers",
+        "answer": "provide lb for both l4 and l7 layers, \nl4 being transport layer protocols such as UDP, TCP, \nl7 being application layer (application, session, presentation layers) protocols eg http, https, ftp, dns\nmore expensive",
+        "pic": ""
+      },
+      {
+        "id": 24,
+        "question": "software based load balancers",
+        "answer": "provide lb for only l7 layer\ncheaper, less efficient",
+        "pic": ""
+      },
+      {
+        "id": 25,
+        "question": "L7 load balancers",
+        "answer": "have extra features:\n- reverse proxy\n- content based routing: static content can be routed to different servers\n- ssl termination: https can be broken to https to save on latency\n- load balancing: round robin, least connection, weighted rr/least connection, least response time ",
+        "pic": ""
+      },
+      {
+        "id": 26,
+        "question": "how can DNS do load balancing?",
+        "answer": "configure DNS records with multiple A records, return ips as:\n- round robin fashion\n- a list of IPs, and a thick client can do load balancing on its own\ncloud based DNS can be configured along with health checks\ncons:\n- dns rely a lot on caching, so if a node goes down it may not reflect instantly, if we configure TTLs then it puts heavy load",
+        "pic": ""
+      },
+      {
+        "id": 27,
+        "question": "in what case we consider DNS load balancing?",
+        "answer": "for global server load balancing. As the entire regions (amer, apac) go down very rarely, we can use DNS to route multi geographic systems",
+        "pic": ""
+      },
+      {
+        "id": 28,
+        "question": "how are systems autoscaled?",
+        "answer": "systems can be autoscaled by using a monitoring service and an autoscaling service:\n- the monitoring service monitors the health check parameters of all the instances, and notifies the autoscaling service in case of an event\n- the autoscaling services takes up the triggers and creates / deletes new instances, by pulling out vm image / container image",
+        "pic": ""
+      },
+      {
+        "id": 29,
+        "question": "what is service oriented architecture",
+        "answer": "a monolith is divided into different services and developed separately. Each can have a separate tech stack, frameworks etc.\neach service can also be scaled independently\nthey have coupled schema and same dbms\ncons:\n- service development is independent but not deployment\n- single database has scalability limitations",
+        "pic": ""
+      },
+      {
+        "id": 30,
+        "question": "micrservices architecture",
+        "answer": "\"shared nothing\" architecture, used where we need very high scalability\ndivide the systems completely into domains, each having it's own separate db.\nthe services call each other for data as they have no shared database\nthere can be an aggregator service that can transform from one object definition to another one.\ncons:\n- duplicate codebase, datastructure, reusable libraries except utilities\n- transactions!",
+        "pic": ""
+      },
+      {
+        "id": 31,
+        "question": "how to do transactions in micro service arch?",
+        "answer": "as the dbs are divided, local transactions is not possible. 2 ways:\n- Distributed ACID transactions using 2PC/3PC\n- Compensating transactions",
+        "pic": ""
+      },
+      {
+        "id": 32,
+        "question": "what are distributed transactions?",
+        "answer": "These use something called two phase/ 3 phase commits.\none of the service acts as a coordinator service.\nasks other services to be ready for a transaction.\nOther services put locks on their respective dbs.\nif a single service fails to compelete the transactions, all services are instructed to roll back.\nas there are multiple locks, multiple requests can get blocked, hence not scalable.\nas microservices have high scalability requirements, this method is avoided.",
+        "pic": ""
+      },
+      {
+        "id": 33,
+        "question": "what's a 2 phase commit",
+        "answer": "The two-phase commit protocol breaks a database commit into two phases to ensure correctness and fault tolerance in a distributed database system.\nrest is as discussed above.",
+        "pic": ""
+      },
+      {
+        "id": 34,
+        "question": "what's a 3 phase commit",
+        "answer": "it's an improvement over 2 PC to ensure more reliability in case coordinator goes down (in 2 pc the services get blocked)\ninfact the problem of scalability gets compunded",
+        "pic": ""
+      },
+      {
+        "id": 35,
+        "question": "compensating transactions - SAGA pattern",
+        "answer": "Here we 'logically undo' the entire transaction.\nwe create undo operations for each local transaction for each service. \nInstead of creating locks, we go on commiting each local transaction.\nBut in case some service operation fails, we call the undo operations involved in the entire transaction.\nwe can do these asynchronously, flow of reversal may not be exactly opposite\nthe undo process itself can fail. So it should be able to restart/retry the compensation.",
+        "pic": ""
+      }
+    ],
+    "Deployment": [
+      {
+        "id": 1,
+        "question": "challenges in deploying applications?",
+        "answer": "trivial to deploy a small monolith app, i.e. one with few components and no replication\nbut for large applications we have multiple components: services, dbs, MQs, caches, LDAP/directory server, content storage, logs, analytics\nall these components need to be replicated\ndeployment also consist of upgrades and bug fixes",
+        "pic": ""
+      },
+      {
+        "id": 2,
+        "question": "what are needed to setup infra for deployment? \ni.e. what are the infra setups?",
+        "answer": "- compute infra: CPU, ram, disk capacity for all servers\n- networking: routing, domain, internet access to servers, security (firewalls, certs)\n- LBs: where we need HLB v/s SLB\n- DNS and discovery services\n- Storage: content, vm/container images, backups, logs\n- mail servers to send notifications\n- CDN\n- need to create dev, test, stage, prod envs ",
+        "pic": ""
+      },
+      {
+        "id": 3,
+        "question": "how do you deploy a single component?",
+        "answer": "you take a machine -> OS -> JVM -> web container (e.g. jetty) -> web application (jar file) \nconfigure environment",
+        "pic": ""
+      },
+      {
+        "id": 4,
+        "question": "how to automate the deployment for a single application?",
+        "answer": "we can simply create a script to automate the deployment\nit can be a shell script, with sequential commands to install softwares, copy files, start the server\nwe can use specialized programs like chef, ansible, puppet which make this an idempotent and declarative, so better management\n\nwe can take an image of this machine and use it to deploy on other machines which already have vmware installed. \nthat way, we don't need to configure environment.",
+        "pic": ""
+      },
+      {
+        "id": 5,
+        "question": "what is a hypervisor?",
+        "answer": "a hypervisor is a program that enables virtualization. It allocates resources from the host machine among the vrtual machines.",
+        "pic": ""
+      },
+      {
+        "id": 6,
+        "question": "difference between hypervisor 1 and hypervisor 2?",
+        "answer": "hypervisor 1 is used commonly in cloud services (enterprise cloud data centers). we take a bare metals machine and directly run the vm. the VM's OS is directly run on the machine.\nhypervisor 2 (e.g. vmware, oracle virtualbox) you run vm on top of the machine's OS. So it's more convenient but 2 OSs are running\nhpervisor 1 is more effecient",
+        "pic": ""
+      },
+      {
+        "id": 7,
+        "question": "benefits of using VM deployment?",
+        "answer": "automated, env configured\nisolation: when more than 1 apps are deployed on a machine, they may hog each other's resources.\n  - using vm, we allocate resources for each app, so they run separately on the same machine.",
+        "pic": ""
+      },
+      {
+        "id": 8,
+        "question": "what are containers?",
+        "answer": "lightweight VMs.",
+        "pic": ""
+      },
+      {
+        "id": 9,
+        "question": "vm vs containers",
+        "answer": "when we create an image of a VM, we take a running host machine, take a dump of entire machine, including OS\nin container, we don't take the running machine, we take a set of instructions to create that image. the image contains not OS but system libraries\nso container start time is fast because we don't need to boot up an OS\ne.g. is an image contains a linux image, the app will make system calls assuming it's a linux system call.\nthe 'container runtime' installed on the machine converts these system calls to the host OS calls.",
+        "pic": ""
+      },
+      {
+        "id": 10,
+        "question": "advantages of containers over VMs",
+        "answer": "lightweight image, occupies less space\nfast start",
+        "pic": ""
+      },
+      {
+        "id": 11,
+        "question": "why are docker files convenient?",
+        "answer": "docker files have version controlled commands. At every instruction, a new image is created from the previous one.\nSo, if a change takes place, the docker image starts from the image before the change. It doesn't need to rebuild from the start.",
+        "pic": ""
+      },
+      {
+        "id": 12,
+        "question": "what is kubernetes",
+        "answer": "container orchestration system",
+        "pic": ""
+      },
+      {
+        "id": 13,
+        "question": "what is a rolling upgrade?",
+        "answer": "Upgrade with zero downtime\nused when it's okay to have old and new version simultaneously\nwhen we need to upgrade to next version, we add another instance with v2.\nthen we remove an instance with v1 one by one and at the same time keep adding another with v2\nat no time the number of instances change\nafter some time the all the instances are upgraded",
+        "pic": ""
+      },
+      {
+        "id": 14,
+        "question": "what capabilities does kubernetes provide?",
+        "answer": "- service naming and discovery: uses internal DNS to map IPs to names\n- container lifecycle management: health checks, restarts, replacement of healthy containers\n- load balancing\n- automated rollouts and rollbacks\n- allow to specify resource (cpu, memory) requirements for containers\n- autmatic mounting of storage",
+        "pic": ""
+      },
+      {
+        "id": 15,
+        "question": "what is a pod?",
+        "answer": "pod is a docker container + an ip address (this IP is assigned by kubernetes, different from the machine's IP)\na pod may run more than one docker container if they can't run without each other, otherwise mostly one pod runs one container\nso kubernetes can have one pod for web app, one for service, one for db and so on\npods can talk with each other using kubernete's own network",
+        "pic": ""
+      },
+      {
+        "id": 16,
+        "question": "what is a service in kubernetes",
+        "answer": "a service is an abstraction for a group of pod endpoints which perform the same function.\nit acts as a load balancer to these pods, we get a single stable IP address which gets rerouted to any of the pods when a client sends a request.",
+        "pic": ""
+      },
+      {
+        "id": 17,
+        "question": "difference between service and deployment",
+        "answer": "service enables network access to a set of pods, responsible for communication\na deployment is used to manage state of pods all at once, responsible for configs, deployment, state, configs etc.",
+        "pic": ""
+      },
+      {
+        "id": 18,
+        "question": "kubernetes architeecture",
+        "answer": "- we provide a few VMs for kubernetes\n- one or more machine is designated master \n- each machine has a 'kube proxy' through which the VMs communicate with each other\n- each machine can have more than 1 pod running\n- also a network is created where each pod is assigned an IP and services are setup to talk to each other\n- Kubernetes has a control plane which has an API server, controller (for monitoring), scheduler (for pod creation etc), etcd key value store (to store desired and current config)\n- we set up config, where we mention the desired configurations for each component. Wr define deployments and services\n- accordingly the controller checks the difference between desired config and the current state of the cluster\n- it asks the scheduler to create / remove pods accordingly\n- we can use api server to execute different kube commands, this changes the desired config manually in the db.\n- the controller again recognizes this and makes changes accordingly.",
+        "pic": "https://www.researchgate.net/publication/359854260/figure/fig1/AS:1147677467250690@1650639039609/Kubernetes-architecture.png"
+      },
+      {
+        "id": 19,
+        "question": "canary deployment",
+        "answer": "practice of making staged releases - deploy a feature on very small number of requests first, then when confident, release to all",
+        "pic": ""
+      },
+      {
+        "id": 20,
+        "question": "recreate deployment",
+        "answer": "involves a downtime\nbring down all the nodes running previous versions, then do migrations, data transformations etc, and then start with new version",
+        "pic": ""
+      },
+      {
+        "id": 21,
+        "question": "blue green deployment",
+        "answer": "when we can't run both versions at the same time\nno downtime\nwe bring up an entire new environment with new version and redirect user requests to there\nquick rollback to previous environment in case of failure\nextra hardware needed",
+        "pic": ""
+      },
+      {
+        "id": 22,
+        "question": "a/b testing",
+        "answer": "like canary, we split the requests, but we target users\nthen we check the success (e.g. click rate) for both versions",
+        "pic": ""
+      }
+    ],
+    "Reliability": [
+      {
+        "id": 1,
+        "question": "In how many ways can a system fail?",
+        "answer": "- network failures: internet, load balancer\n- machine failure: CPU, disk, memory\n- software failure: process\n- operations failure: deployment fail, third party library, configuration, load induced failure\n- disaster: datacenter",
+        "pic": ""
+      },
+      {
+        "id": 2,
+        "question": "what is reliability of a system?",
+        "answer": "it means that a system continues to function correctly even in presence of partial failures",
+        "pic": ""
+      },
+      {
+        "id": 3,
+        "question": "what is availability",
+        "answer": "a system should be available for operations at all time",
+        "pic": ""
+      },
+      {
+        "id": 4,
+        "question": "what should you consider while deciding availability?",
+        "answer": "availability is costly, so it should be determined on the basis of what impact would be there in case of downtime. it can range from:\n99.999% availabilty ~= 5 mins downtime an year, e.g. atm, to:\n99% availability ~= 3 days 15 hours downtime an year e.g. batch processing",
+        "pic": ""
+      },
+      {
+        "id": 5,
+        "question": "what is fault tolerance?",
+        "answer": "technique to engineer reliability and availability in any system ",
+        "pic": ""
+      },
+      {
+        "id": 6,
+        "question": "how do you design fault tolerance?",
+        "answer": "redundancy -> fault detection -> recovery",
+        "pic": ""
+      },
+      {
+        "id": 7,
+        "question": "what are the types of redundancy?",
+        "answer": "- hot / active: the load gets distributed to multiple instances even though a single one is capable to take the entire load. \nThe other instances take over when one of the instance go down. It's quick. most desired option.\n- warm / passive: a seconday instance exists, but is not used to serve the load. not as quick, takes time to replace the active one.\n- cold/ spare: no redundancy built it, a spare is provisioned when the instance goes down. cheap as no backup is kept. ",
+        "pic": ""
+      },
+      {
+        "id": 8,
+        "question": "how to build redundancy in stateless components?",
+        "answer": "for stateless components like web apps, services, etc we provision extra instances over and above the scalability requirements",
+        "pic": ""
+      },
+      {
+        "id": 9,
+        "question": "how to build redundancy in stateful db?",
+        "answer": "we replicate data in db, but unlike scalability we don't use it as a read replica.\n- synchronous replication: a transaction is only successful when the replication has completed to backup. Hot redundancy, but higher latency\n- asynchronous: transaction completes without replication, backup happens independently. \nif primary goes down, it can be replicated by reading logs, so warm redundancy. If machine is completely lost, some data is lost forever.",
+        "pic": ""
+      },
+      {
+        "id": 10,
+        "question": "how to build redundancy in stateful MQ?",
+        "answer": "same as db, provided by vendor",
+        "pic": ""
+      },
+      {
+        "id": 11,
+        "question": "redundancy in static content storage",
+        "answer": "replication easier because no write conflicts as content in immutable",
+        "pic": ""
+      },
+      {
+        "id": 12,
+        "question": "redundancy in cache?",
+        "answer": "do we need redundancy in cache? as data is already persisted in db. If we do need to maintain performance, redis provides, memcached not.",
+        "pic": ""
+      },
+      {
+        "id": 13,
+        "question": "load balancer redundancy",
+        "answer": "single point of failures, hence critical\nprovide secondary LBs which takeover in case of failures",
+        "pic": ""
+      },
+      {
+        "id": 14,
+        "question": "datacenter redundancy",
+        "answer": "it's important that the infra is replicated across multiple zones (within 10 miles) or regions. With public cloud it's really simple now.\nto replicate data, we go for master-slave and not master master coz we don't want write conflicts.\nIn zonal case we may want to do sysnchronous replication of data because they're closer.\nfor region we would opt for asynchronous replication\nload is managed using DNS",
+        "pic": ""
+      },
+      {
+        "id": 15,
+        "question": "health check service",
+        "answer": "we can monitor the health of our system by using a health check service. It can be an external service or all nodes in a cluster monitor each other\nit can be used to generate \n- alerts for recovery\n- can also monitor loads, so create an event to scale up/down\nit can be an external monitoring service (ping based), or internal cluster monitoring built into the system using heartbeats",
+        "pic": ""
+      },
+      {
+        "id": 16,
+        "question": "how to monitor internal cluster?",
+        "answer": "heartbeats can be exchanged periodically between nodes in a cluster\ndone in some nosql dbs and load balancers\nmay need support for protocols that constantly monitor each other and detect when a node is down and take its place",
+        "pic": ""
+      },
+      {
+        "id": 17,
+        "question": "what are floating IPs used to manage failovers?\n(virtual IP failover mechanism)",
+        "answer": "a virtual IP address is assigned to either primary or secondary node. This IP is different from the original IPs of the machine\nthe client hits the DNS which returns this floating IP. When client hits this IP it gets redirected to whichever node the IP address is owned by.\na heartbeat is setup between the primary and standby",
+        "pic": ""
+      },
+      {
+        "id": 18,
+        "question": "registry server for failovers?",
+        "answer": "contects the registry server to know which server to connect to.\nboth the nodes register themselves and constantly send heartbeats",
+        "pic": ""
+      },
+      {
+        "id": 20,
+        "question": "hot standby for database recovery?",
+        "answer": "- setup synchronous replication b/w primary and secondary dbs\n- only when data is written to secondary, the primary sends acknowledgement to client\n- almost no downtime\ncons:\n- primary and secondary must be closely located. Else connection takes a lot of time, client experiences latency\n- writes are slow",
+        "pic": ""
+      },
+      {
+        "id": 21,
+        "question": "warm standby setup for database recovery?",
+        "answer": "- setup async replication between primary and secondary\n- any changes are put in a log file and then written to secondary as a batch process\n- may end up with some lost data if the machine craches before async replication happens\n- failover not quick because catchup needed\n- use them in case of disaster recovery\n- higher performance",
+        "pic": ""
+      },
+      {
+        "id": 22,
+        "question": "cold standby for database recovery?",
+        "answer": "- no replication done\n- based on db backups, take backups and build db from there\n- time-taking\n- used in case of db correuption, replication doesn't help in that case because they too get corrupted.\n- we can also move these backups to another country instead of another datacenter, so they can help in disaster recovery.\nprocess:\n- all updates are made to redo/write-ahead log files. \n- take backups\n- if something has gone corrupt, and overriding sql queries can't help\n- import most recent uncorrupted backup into an empty instance. and then apply the log statements from then on",
+        "pic": ""
+      },
+      {
+        "id": 23,
+        "question": "what are the best practices for failovers?",
+        "answer": "- failover automation as during disaster or failure manual steps may be inaccessible\n- constant testing of failover, as the system keeps evolving",
+        "pic": ""
+      },
+      {
+        "id": 25,
+        "question": "what is a cascading failure",
+        "answer": "so if a service is calling 3 other services, and one of them is blocked, without timeouts in everytime interval 33% ofthreads keep gettting blocked\nin the next time interval, 33% from the remaining unblocked threads get blocked, eventually leading to all the threads blocked from the calling service\nthe calling/client service becomes completely unavailable.",
+        "pic": ""
+      },
+      {
+        "id": 26,
+        "question": "in what scenarios are timeouts important?",
+        "answer": "cascading failures can be avoided if timeouts are in place.",
+        "pic": ""
+      },
+      {
+        "id": 27,
+        "question": "what are transient failures",
+        "answer": "these are temporary failures: e.g.\n- race conditions if multiple clients are trying the same process. the request will fail for one of the client",
+        "pic": ""
+      },
+      {
+        "id": 28,
+        "question": "where are retries useful?",
+        "answer": "- transient errors\n- system errors: an instance goes down, if we retry it can hit to another alive instance",
+        "pic": ""
+      },
+      {
+        "id": 29,
+        "question": "retries don't help?",
+        "answer": "- functional errors: a service is returning incorrect response",
+        "pic": ""
+      },
+      {
+        "id": 30,
+        "question": "retry with exponential backoff?",
+        "answer": "client can wait for 1 sec, then 2 sec, then 4, then 8, 16 and so on\nrandom extra wait times is added alongwith each request - so that the entire load is not diverted to an instance all at once.",
+        "pic": ""
+      },
+      {
+        "id": 31,
+        "question": "what is retrying with idempotent tokens?",
+        "answer": "for unacknowledged failed requests\nthe case may happen where a request gets processed but before the response gets returned the system goes down.\nIn that case the client will retry and then the request will get processed again in DB\nTo avoid this, it is beneficial to pass a requestId, and the same one gets passed when retry happens. \nThis id is saved as processed, so next time it gets called it doesn't get executed.",
+        "pic": ""
+      },
+      {
+        "id": 32,
+        "question": "what's circuit breaker?",
+        "answer": "keeps track of failure rate\nin event of too many failures, fallback to: cache responses, default responses, error messages\nperiodic attempts to check if service is back, resume when stress dessipates",
+        "pic": ""
+      },
+      {
+        "id": 33,
+        "question": "what is fail fast",
+        "answer": "instead of passing default values, fail the service asap, e.g. validation error, missing env variables, open circuit breaker",
+        "pic": ""
+      },
+      {
+        "id": 34,
+        "question": "shed load",
+        "answer": "when a server can't handle all the load, instead of queueing those request, reject the requests all together\ntoo much queing can reduce client experience",
+        "pic": ""
+      },
+      {
+        "id": 35,
+        "question": "back pressure",
+        "answer": "when the clients are in control of the system\nwhen there's too much load on the server, the requests are rejected by the server and client does the exponential backoff\nessentially slowing down the client\neven when clients are not in control, e.g. browsers, mobile apps, SPA by controlling ajax calls",
+        "pic": ""
+      },
+      {
+        "id": 36,
+        "question": "summary- what are system stability patterns for the server side & client side?",
+        "answer": "server - fail fast, shed load, back pressure\nclient - timeouts, retries, circuit breaker",
+        "pic": ""
+      }
+    ],
+    "Tech Stack": [
+      {
+        "id": 2,
+        "question": "challenges to consider for web apps?",
+        "answer": "- receive the most load\n- client connect from long distances as they're external facing\n- connection needs to be secured",
+        "pic": ""
+      },
+      {
+        "id": 3,
+        "question": "what apps can be used to render static content?",
+        "answer": "- apache web server\n- nginx web server\n- cloud storage",
+        "pic": ""
+      },
+      {
+        "id": 4,
+        "question": "apache web server features",
+        "answer": "- render static content: stores in disk, and then pull from RAM. hence requires large memory. Insufficient for large amount of static data\n- generate dynamic content: good, generate html pages using python, php perl etc., requires CPU + RAM, no JSP servelet support\n- act as reverse proxy: not great",
+        "pic": ""
+      },
+      {
+        "id": 5,
+        "question": "apache web server architecture",
+        "answer": "request-response model\nit has a connection pool, can be persistent connection\nthread pool, each thread is dedicated to a single connection. Depending on the task, a thread can take CPU or memory.\nif there are too many requests, one of CPU or memory may run out.",
+        "pic": ""
+      },
+      {
+        "id": 6,
+        "question": "how apache web server scales?",
+        "answer": "- if used to generate dynamic content: it becomes CPU and memory intensive, in that case, run more instances of the web server\n- if used as reverse proxy: it receives a lot of requests, needs a lot of threads, hence needs memory more. The only way to scale apache as a reverese proxy is to scale vertically, hence not a good design.",
+        "pic": ""
+      },
+      {
+        "id": 7,
+        "question": "nginx web server features",
+        "answer": "same features as apache web server\n- store static content\n- generate dynamic content: not the best\n- act as a reverse proxy: excellent\n- cache content",
+        "pic": ""
+      },
+      {
+        "id": 8,
+        "question": "nginx architecture",
+        "answer": "- it creates a connection for each client\n- has no thread pool, a single worker thread that polls for client requests. A single thread gives better performance due to no context switch. \n- the thread returns response after compute\n- if there're any IO calls, e.g. db access, service access or file read, it launches an asynchronous request .\n- hence nginx works pretty well when the requests are more IO intensive as compared to compute\n- as there's a single thread, memory is required to maintain only that thread (lesser memory requirements). hence better scales as a reverse proxy\n- for static data as well, it reads it asynchronously, so marginally better",
+        "pic": ""
+      },
+      {
+        "id": 9,
+        "question": "what are web containers",
+        "answer": "web containers can host languages like java, running a servelet engine, e.g. tomcat, jetty\nit manages the lifecycle of servelts",
+        "pic": ""
+      },
+      {
+        "id": 10,
+        "question": "application servers",
+        "answer": "exposes business logic to client, which generates responses. An application server runs a web container inside it, alongwith: servelet engine, session clustering, connection pools, caching, JMX.\ne.g. tomcat, oracle webLogic, IIS is a web server that converts into an application when interagted with .net runtime",
+        "pic": ""
+      },
+      {
+        "id": 11,
+        "question": "web server v/s application server?",
+        "answer": "- a web server is used for hosting web applications. It handles http requests and responses, designed to serve static content, but have plugins to support scripting languages such as perl, php, asp, jsp\n- an application server can be used to host any application, not limited to http. It can do whatever a web server is capable of. Running an application with all its business logic\n- A web servers are well suited for static content and app servers for dynamic content, most of the production environments have web server acting as reverse proxy to app server. That means while servicing a page request, static contents (such as images/Static HTML) are served by web server that interprets the request. Using some kind of filtering technique (mostly extension of requested resource) web server identifies dynamic content request and transparently forwards to app server",
+        "pic": ""
+      },
+      {
+        "id": 12,
+        "question": "spring boot",
+        "answer": "- runs embedded web container, tomcat by default, or jetty\n- follows MVC architecture: servelet for logic, jsp for presentation\n- spring runs a container inside a web container",
+        "pic": ""
+      },
+      {
+        "id": 13,
+        "question": "key features of spring boot",
+        "answer": "- inversion of control / dependency injection\n- MVC for frontends\n- jdbc templates\n- connection pool (http, db)",
+        "pic": ""
+      },
+      {
+        "id": 14,
+        "question": "sping v/s spring boot",
+        "answer": "spring boot simplifies spring framework, takes away a lot of boilerplate configs for setting up spring. Natively supports JSON, so no conversion required",
+        "pic": ""
+      },
+      {
+        "id": 15,
+        "question": "nodejs",
+        "answer": "https server that uses javascript engine on the server side. It is very efficient for requests that are IO bound and not CPU bound",
+        "pic": ""
+      },
+      {
+        "id": 16,
+        "question": "why nodejs uses javascript engine?",
+        "answer": "javascript engine was designed to handle a large number of IO requests asynchronously\njavascript efficiently makes a lot of calls to server, render the page, so does a lot of async IO",
+        "pic": ""
+      },
+      {
+        "id": 17,
+        "question": "nodejs architecture",
+        "answer": "runs on a single thread called Event Loop, for handling incoming requests, handling response, making client calls, processing callbacks\nno thread is spawn for each request:\nthe single thread constantly polls OS IO queue, and that's how it gets to know about a client request\npicks up a request and starts processing\nany async call is put into a callback queue\nif any external calls are made synchronously, they're executed by the single thread itself in a blocking manner. Hence, we should always make calls asynchronously in nodejs",
+        "pic": ""
+      },
+      {
+        "id": 19,
+        "question": "CDN",
+        "answer": "Akamai is one solution, else AWS CloudFront, GCP Cloud CDN",
+        "pic": ""
+      },
+      {
+        "id": 20,
+        "question": "Load Balancers",
+        "answer": "Clouds provide other features such as backend health checks\nensure HA (inbuilt primary and secondary LBs)\nFor application LB (route the request intelligently to static or synamic depending upon url): AWS Application LB, GCP External Http LB\nFor internal proxy, not expecting to read contents of the request: AWS Network LB, GCP http network LB",
+        "pic": ""
+      },
+      {
+        "id": 21,
+        "question": "cloud storage",
+        "answer": "AWS s3, GCP cloud storage. replication built in. Balances load depending upon location also",
+        "pic": ""
+      },
+      {
+        "id": 22,
+        "question": "cloud web containers",
+        "answer": "AWS elastic beanstalk, GCP App Engine: easy to deploy, auto scale, reliable",
+        "pic": ""
+      },
+      {
+        "id": 23,
+        "question": "how CDN works?",
+        "answer": "a CDN is used to store static data across geographic locations. Static data for a site is usually considerable more than dynamic data.\nAlso, static data is accessed much more than dynamic data. Do it makes sense to cache it.\nWhen a client asks for a file which is cached, it is sent to it dorectly (cache hit)\nWhen a client hits a server where a file doesn't exist, the file is downloaded from the main server over a CDN network. \nIn this case of cache miss, a persistent connection is formed between the edge and the main server, making the download across locations faster.",
+        "pic": ""
+      },
+      {
+        "id": 24,
+        "question": "cloud cache",
+        "answer": "AWS elastic cache, GCP memory store, both have variants for memcached and redis, fully managed",
+        "pic": ""
+      },
+      {
+        "id": 25,
+        "question": "cloud message queues / streaming",
+        "answer": "rabbitMQ: AWS SimpleQueueService, kafka: Kinesis; GCP PubSub: for both scenarios",
+        "pic": ""
+      },
+      {
+        "id": 27,
+        "question": "what are some caching patterns?",
+        "answer": "- cache aside: the most common use, cache is used in addition, values are explicitly stored, when cache miss: the client request directly from server and writes on cache\n- read through: cache sits in the middle, when a cache miss happens, cache itself pull data from server\n- write through: cache sits in the middle, values are proactively updated in cache when it is saved/updated in the server\n- write behind: cache sits in the middle, valued are updated in cache, and then written asynchronously to the server later (risky as caches are volatile)",
+        "pic": ""
+      },
+      {
+        "id": 28,
+        "question": "memcached",
+        "answer": "distributed cache, key value storage. values stored as blob, cache aside\n- TTL can be set for each data\n- eviction strategy: first evicts expired data using TTL, then uses LRU strategy",
+        "pic": ""
+      },
+      {
+        "id": 29,
+        "question": "memcached architecture",
+        "answer": "has a cluster, values are placed using consistent hashing to resolve the node\ncluster aware client library is used by all the servers (the servers are client for cache), these servers then make calls to save into cache.\nnode failure is treated as cache miss, data is lost in case of node failure",
+        "pic": ""
+      },
+      {
+        "id": 30,
+        "question": "redis cache",
+        "answer": "same like memcached + more, values can be datastructures\ncan be used for persistence: data written on disk asyn, so we can take backup, restart\neach node replicated to slave node (async replication), using which read load can be distributed\ncan be used as a messaging queue\ndata-store mode / persistent node: number of nodes are fixed (not in cache mode).\nmore complicate to install than memcached",
+        "pic": ""
+      },
+      {
+        "id": 32,
+        "question": "where are MQs used",
+        "answer": "- a message queue between 2 services is used when immediate response is not needed, when we want to guarantee atleast once delivery.\n- an MQ always ensures that a message is delivered, even if no service is currently present to receive it currently. \n- it also helps to decouple the services e.g. rest http to grpc. Also no need to know by source service which service it needs to deliver it\n- manages the rate of production and consumption. ",
+        "pic": ""
+      },
+      {
+        "id": 33,
+        "question": "MQ features?",
+        "answer": "- atleast once delivery\n- messages are sequenced \n- messages are delivered at the rate in which it can be consumed\n- consumer mode: push or pull",
+        "pic": ""
+      },
+      {
+        "id": 34,
+        "question": "rabbit mq v/s kafka",
+        "answer": "- rabbitMQ can be used for all use cases, kafka can only be used for pull based messaging\n- pull makes sense for streaming workloads, where incoming messages are high (kafka is good in that). when there is not guarenteed to be full, push makes more sense.\n- rabbitMQ uses b-tree to write data on harddisk, hence write overhead",
+        "pic": ""
+      },
+      {
+        "id": 35,
+        "question": "rabbitMQ features",
+        "answer": "general purpose message broker, used for service integration, scales well vertically, upto 50k messages per second\n- messages are pushed to consumers\n- deleted once acknowledged (hence not reliable but in service integration use case not necessarily needed)\n- message ordering is guaranteed\n- transient messaging: mesasges may get lost, but instant delivery\n- persistent messaging: messages are placed to disk before delivering, in case mq creashes messages maybe delivered again. hence must have messageId\n- different topics exists. messages are delivered to an Exchange that delivers it to right queue\n- queue can be replicated, master-slave replication to add reliability, not scalability. Only master handles the load.\n- after acknowledgement, messages are deleted from disk",
+        "pic": ""
+      },
+      {
+        "id": 36,
+        "question": "kafka architecture",
+        "answer": "- like a log file (a distributed log file). Internally kafka writes all its messages sequentially to a log file, hence operations are extrmely fast, so large number of producers supported. (readds very fast)\n- consumer needs to track the offset (the message till which the consumer has read messages, zookeeper can help with that)\n- these log files can stay for long time, so a consumer can demand to read from any offset\n- as consumers attempt to read the latest messages, they're fetched from the operating system page cache (writes are fast as well)\n- horizontal scalability: topics are partitioned, producers can write to any partition, order of data guaranteed only within a partition. With this the load is divided.\ncons:\n- ordering in a queue is lost, there is no global order, but local order exist. But producer can decide to write to specific partition (suppose user wise).\n- cannot push the messages. Kafka is defined for high throughput environments, so even with pull CPU cycles are not wasted (not designed for service integration)\ne.g. click streams, log analytics, page views, ingestion",
+        "pic": ""
+      },
+      {
+        "id": 37,
+        "question": "redis pub/sub",
+        "answer": "- redis can act as an excellent message queue for short lived messages that don't require persistence. Fire-n-forget, no delivery guarentee. millions of operations per sec.\n- like a sync call, subscribers maintain a TCP connection (long lived) with topic (or channels in this case). \n- a message is pushed to all the subscribers. If the message is not delivered, it is not tried again and instead deleted.\n- leaderboards: where a staus change message is short lived as even if the message is lost the new status is more valid. This change needs to goto multiple users.\n- rabbitMQ in transient mode, but there the deliveries are reliable, so there is overhead.",
+        "pic": ""
+      },
+      {
+        "id": 39,
+        "question": "rdbms pros and cons?",
+        "answer": "pros:\n- acid transactions, data consistency\n- well defined schema, so can do queries, join tables. Can create indexes on columns, which can speed our searches\n- in nosql dbs, we need to know the access patterns beforehand, so that we define schema on that basis. in RDBMS, after defining schema can index and query any column\ncons:\n-  transactions and data consistency only possible on a single node, else it needs 2PC/3PC (which relaxes the consistency)\n- fixed schema impedes application evolution\n- joins may slow down a system\n- RDBMS performs overwrites on updation, the nosql dbs create a new row for each update, so versioning possible.",
+        "pic": ""
+      },
+      {
+        "id": 40,
+        "question": "how to scale RDBMS?",
+        "answer": "- scale vertically, get superior hardware\n- partition db vertically. Each service accesses one node dedicated with the data for that service. e.g. order service accesses order db hosted on a separate node. Data in other db is only accessible through the respective service. Need to handle eventual consistency, using 2phase/3phase commits.\n- create read replicas. writes happen only on master node. Reads are updated async, because if we sync then writes can become extremely slow. In this case, the read queries are no longer consistent (for a brief moment) as data copied is asynchronously from master. The writes are still not scaled.",
+        "pic": ""
+      },
+      {
+        "id": 41,
+        "question": "how to make RDBMSs reliable?",
+        "answer": "do synchronous replication. It needs to be sync because if master goes down the replica should be able to substitute.",
+        "pic": ""
+      },
+      {
+        "id": 42,
+        "question": "nosql pros and cons?",
+        "answer": "nosqls were created with scalability in mind. \npros:\n- scalability: we can partition data on multiple nodes, which are built on commodity hardware. In RDBMS we don't use commodity hardware because it needs to be extremely reliable.\n- availability: eventual consistency, supports data replication\n- flexible schema: supports evolution\n- performance: denormalized, inmemory r/w\ncons:\n- acid transactions and joins not supported.\n- availability comes at the cost of data consistency\n- limited indexing, some dbs don't support secondary indexes and so on\n- low performance on queries based on non-key",
+        "pic": ""
+      },
+      {
+        "id": 43,
+        "question": "amazon dynamoDB",
+        "answer": "- key-value datastore: values can be json, xml etc. Hence free schema\n- like hashmap, but are persistent and distributed\n- have a primary key called 'Partition Key', and sort key. Same partition key go to same node, in that case sort key determines the order, and helps in search, range queries",
+        "pic": ""
+      },
+      {
+        "id": 44,
+        "question": "dynamo db arch",
+        "answer": "- values less than 1 MB\n- peer to peer cluster: no master, can write on any node, that node will forward the request to the responsible node. hence writes are never rejected (pro over master-slave)\n- if two users simultaneously write on different nodes for the same key, then need to define business rules / use vector clocks to resolve merge conflict\n- gossip protocol, advanced consistent hashing\n- nodes randomly talk to enough number of nodes to propogate the state of the cluster\n- favours HA over consistency",
+        "pic": ""
+      },
+      {
+        "id": 45,
+        "question": "google bigtable / hbase",
+        "answer": "- data is grouped into column families identified by a row key \n- column families can contain columns, \n- stored as tree map, so rows are sorted. data is saved as a table with columns: row_key | column_family | column | timestamp | value\n- with timestamp we can maintain different versions\n- each cell of our data becomes the value column, hence saving space for columns for which value doesn't exist\n- rows are sorted by index key = row_key+column_family+column+timestamp, maintains a tree kind of index (hence treemap)\n- data is compressed by column_family",
+        "pic": ""
+      },
+      {
+        "id": 46,
+        "question": "bigtable architecture",
+        "answer": "- every column is an index, so data is searchable by columns\n- has underlying storage (gfs), hence persistent storage to store large files\n- an intermediate layer called 'tablet servers' for fast read operations\n- for fast write operations, data is first stored in write ahead logs\n- any unused data is written to SS tables in gfs periodically and replicated there\n- if one of the nodes crash, data is read from gfs again\n- only single copy exists in tablet servers, so there is no chance of a write conflict (data consistent)\n- read & write, especially write operations have a very high throughput. can be used for streaming.\n- there is master server that is responsible for managing tablet servers. a client connects to the master server once to get the tablet metadata (in the form of a tablet tree)\n- there is a lock server (chubby, like zookeeper) that master connects to. All tablet servers are supposed to maintain a lock on the server. if a tablet server fails to do so, it is regarded as dead",
+        "pic": ""
+      },
+      {
+        "id": 47,
+        "question": "what are tablet servers in bigtable?",
+        "answer": "they're an intermediate layer that store data (string sorted table) in memory\n- acts like a cache\n- in memory layer",
+        "pic": ""
+      },
+      {
+        "id": 48,
+        "question": "hbase",
+        "answer": "open source implementation of bigtable, only the APIs are different\n- tablet servers are called region servers\n- underlying storage is hdfs\n- lock server is zookeeper",
+        "pic": ""
+      },
+      {
+        "id": 49,
+        "question": "cassandra arch",
+        "answer": "mix of bigtable and dynamo db\n- whole table is called a column family\n- it has a partition key and a sort key = primary key\n- the data is stored column wise, where partition key and sort key become columns, along with a column called 'column name' with the name of column and column value\n- each product id goes to a different partition\n- peer to peer clusters like dynamodb. any operation is done on replica nodes\n- write operations: logged in write ahead log file, then done in memtable, write is acknowledged then to the client. memtables are flushed to disk on ss tables when full.\n- read is fast if it's cached in memory",
+        "pic": ""
+      },
+      {
+        "id": 50,
+        "question": "cassandra features",
+        "answer": "- schema less, column family based structured data, sparse\n- replication is peer to peer, HA, even during network partitions\n- eventual consistency\n- write conflicts due to peer to peer system",
+        "pic": ""
+      },
+      {
+        "id": 51,
+        "question": "mongo db",
+        "answer": "key -> document (json doc in binary format). Mongo db knows each field in json\n- designed for storing nested json documents. can update any field\n- can create indexes for these top level or nested columns",
+        "pic": ""
+      },
+      {
+        "id": 52,
+        "question": "mongo db arch",
+        "answer": "- indexes for fast search, but write overhead possible (like rdbms)\n- sharding: range (default) / hash (optional)\n- each key has it's own primary server (write) and secondary servers (for read). eventual consistency\n- works very well with node.js: javajscript -> node.js -> mongo",
+        "pic": ""
+      },
+      {
+        "id": 54,
+        "question": "logstash architecture",
+        "answer": "used to push, process logs\n- contains of an I/o plugin which imports log/ stream events as pull (from DB, queue), or push (filebeat)\n- next the logs go to a queue for reliability, at least once delivery, also tracks acks and applies backpressure (stops requesting/ accepting from source)\n- filter plugin : to filter, transform or aggregate logs\n- output plugin: push to ElasticSearch, Redis, Webhdfs, s3, kafka, file, email etc.",
+        "pic": ""
+      },
+      {
+        "id": 56,
+        "question": "what is filebeat",
+        "answer": "fileeat collects logs and ships it to elasticsearch. it is provided by logstash\n- there is an entire collection of 'beats' that are plugins used for different sources, such as filebeat is for file.",
+        "pic": ""
+      },
+      {
+        "id": 57,
+        "question": "logstash alternatives?",
+        "answer": "apache flume, facebook scribe, fluentd",
+        "pic": ""
+      },
+      {
+        "id": 58,
+        "question": "fluentd features",
+        "answer": "- fluentd is older than logstash\n- all features of logstash present in fluentd\n- logstash is used as it is a part of ELK stack so used wherever we are using ES, can use fluentd with ES as well\n- routing: events can be tagged and routed to different destinations\n- fluentd integerates with docker very well. has it's own driver which can be started when starting the docker container. `docker run --log-driver=fluentd`",
+        "pic": ""
+      },
+      {
+        "id": 59,
+        "question": "what is ELK stack",
+        "answer": "elasticsearch + logstash + kibana",
+        "pic": ""
+      },
+      {
+        "id": 60,
+        "question": "fluentd v/s logstash?",
+        "answer": "- logstash is a java application, has a high memory footprint when running on the same server as the logging application. (that's why we use filebeat)\n- fluentd is lightweight, same as filebeat\n- fluentd has Fluent Bit - extremely lightweight agent",
+        "pic": ""
+      },
+      {
+        "id": 62,
+        "question": "where to save unstructured data such as logs",
+        "answer": "1. file storage: hadoop\n2. use some kind of datastore: rdbms not coz unstructured data, can use nosql databases\n- elasticseach is a document oriented database, designed for doing full-text search",
+        "pic": ""
+      },
+      {
+        "id": 63,
+        "question": "what is an inverted index?",
+        "answer": "- an index is used by dbs to search data. However ES uses something called inverted index\n- each piece of data is called a 'document', stored with a document id.\n- an inverted index stores data as a map with the key being each term, against the frequency of that term and which document it is present in. This is similar to the index we see at the back of a book.\n- therefore, we have no notion of a column here. Here the index is on each word of each row\n- whenever new rows are added, another index is formed and merged with the original index.\n- the indexes are kept in a sorted order so we can use merge sort to easily merge.",
+        "pic": ""
+      },
+      {
+        "id": 64,
+        "question": "elastic search",
+        "answer": "- elastic search uses an inverted index where each document is a json object.\n- an index in ES is like a 'database'\n- a 'type' is like a table. \n- when we enter a document, we have to specify the index and the type of the doc\n- it supports other data types apart from string\n- elastic search we can use an api to query data: e.g. localhost:9200/_search?q=john,  localhost:9200/_search?q=name:john, or localhost:9200/accounts/person/1\n- when we're searching for data, we don't search for huge amount of data. the expected result set is not huge, that is not the right use case for ES (can try hadoop).",
+        "pic": ""
+      },
+      {
+        "id": 65,
+        "question": "elastic search index",
+        "answer": "- dataset can be very large, in petabytes. but the search string needs to be smaller.\n- master/slaves arch\n- data can be sharded based on document id, on multple nodes also having replica shards. therefore, highly available and scalable\n- put/get requests happen only on primary shard, search requests can fall to any shard\n- when searching, it can be there in any doc, so need to search on all nodes. all results get back to the coordinator, which will aggregate it and return\n- index on ES is based on merge sort. index is not updates with every put\n- elastic search uses lucene.\n- inverted indexes of a 3 are merged together, into a top level index\n- an array of inverted indexes is maintained\n- when searching, all the indexes in the list are searched one by one. due to merging process,most of the terms reside in a very large index, with the newly inserted doc having their own indexes, we don't touch the older index ever. hence very fast insert.\n- for update or deletion, that document is disabled and a new document is created.\n- index is maintained in memory, occassionally flushed to disk for reliability. (when a node goes down, index is built from disk and write-ahead logs).",
+        "pic": ""
+      },
+      {
+        "id": 66,
+        "question": "HDFS",
+        "answer": "to process large amount of data\n- distributed file storage\n- a file is broken into chunks (64mb) and stored in multiple nodes, so they can be read parallely. Chunks are replicated to other nodes\n- unstructured files like logs\n- not suitable for storing small files > 100 MB\n- master and data nodes. talks to master node to hold directory structure and tell the client on which node a file can be stored\n- client then directly talks with datanodes. hence master node is not a bottleneck",
+        "pic": ""
+      },
+      {
+        "id": 68,
+        "question": "map reduce",
+        "answer": "- a file is already stored in the form of chunks on HDFS\n- the advantage of map reduce algorithm is that maximum processsing happens on the data node itself. We do not need to pull all data together to process, and no transfer of data required. Instead our code logic goes to each node.\n- any input/output datasource, e.g. hdfs, hbase, cassandra\nmap phase: \n- split: read the file into memory as 'splits', break down each record\n- extract: break down record into key-value pairs: as per written code, each record is parsed and transformed (e.g. parse each line, split the line into different words, for each word put a word count against it).\n- write temp data on disk (hdfs)\nreduce phase:\n- no. of nodes on which reduce will run can be configured\n- shuffle & sort: shuffle and sort the keys\n- aggregate: write code in reducer handler to aggregate them (e.g. add the word counts)",
+        "pic": ""
+      },
+      {
+        "id": 69,
+        "question": "apache spark",
+        "answer": "evolution of map reduce\n- can be installed on HDFS itself\n- in MR, data is read from disk, then after map phase written on disk, then in reduce phase read from disk again, and then again written on disk after reduce. (4 disk ops)\n- in spark: read from hdfs, run map, but maintain result on memory, reduce reads from memory, then writes the result on hdfs (more tranfromations possible as well)\n- other operations available out of the box: map, reduce, union, groupBy, join\n- create DAG",
+        "pic": ""
+      },
+      {
+        "id": 70,
+        "question": "spark streaming",
+        "answer": "read streaming data\n- e.g. read streaming data from kafka\n- create micro batches (has some overhead)\n- run MR and write the results",
+        "pic": ""
+      },
+      {
+        "id": 71,
+        "question": "hive",
+        "answer": "sql queries on mapreduce. \n- write sql queries which are converted into mapreduce operations and run accordingly",
+        "pic": ""
+      },
+      {
+        "id": 72,
+        "question": "pig",
+        "answer": "scripting language for MR for complex data structures",
+        "pic": ""
+      },
+      {
+        "id": 73,
+        "question": "stream processing",
+        "answer": "real time analysis\nstream processing engines such as storm, flink, spark (micro batching)\n- kafka is used as a buffer between systems, or in case of multiple sources/desinations. \n- event issues: event delay, out-of-order, missing events\n- need to provide fault tolerance, replay the events",
+        "pic": ""
+      },
+      {
+        "id": 74,
+        "question": "data warehouses",
+        "answer": "oracle, teradata\n- run ETL jobs",
+        "pic": ""
+      }
+    ],
+    "Security": [
+      {
+        "id": 2,
+        "question": "what is a key",
+        "answer": "a set of characters, normally used by an encryption algo to create cipher data",
+        "pic": ""
+      },
+      {
+        "id": 3,
+        "question": "symmetric key encryption",
+        "answer": "- the same key is used to encrypt and decrypt data\n- confidentiality of data for trusted clients\n- very fast\nlimitations:\n- if the clients are not trusted (say browser clients), then sharing the same key to untrusted clients can be risky\n- hence no secure way of exchanging it between client and server",
+        "pic": ""
+      },
+      {
+        "id": 4,
+        "question": "public-key/assymmetric encryption",
+        "answer": "- public/private keys are similar to symmetric keys\n- they are a pair, created using the same information\n- there is no difference in keys per se, any can be designated public or private\n- public key can be shared with everyone",
+        "pic": ""
+      },
+      {
+        "id": 5,
+        "question": "asymmetric algo for authn",
+        "answer": "- use public key to encrypt data\n- use private key to decrypt data, hence only the holder of the private key can decrypt the message\n- this ensures that only the inteded recepient have access to data",
+        "pic": ""
+      },
+      {
+        "id": 6,
+        "question": "asymmetric algo for non-repudiation (confirm the author)",
+        "answer": "- use private key to encrypt data\n- use public key to decrypt data\n- if we're not able to decrypt the data, that means the data has been tampered\n- this confirms the identity of the sender, and the integrity of data as sent by the sender",
+        "pic": ""
+      },
+      {
+        "id": 7,
+        "question": "how is assymetric encryption used for secure network protocol?",
+        "answer": "- client / browser initiates a ssl request.\n- server transfers its public key, as part of the certificate\n- client generates a symmetric key and transfers it to the server\n- this symmetric key is itself encrypted using the public key, and now it can only be decrypted using the server's private key\n- so now, the server has both the private key, and the encrypted symmetric key\n- the server uses its private key to decrypt the encrypted key\n- once the symmetric key is obtained, data can be tranferred over insecure network using the symmetric key\n- we use symmetric key because, the assymmetric key encryption/decryption is far far slower\n- so we use asymmetric encryption to only transfer the symmetric key securely, and then use the symmetric key for the actual data",
+        "pic": ""
+      },
+      {
+        "id": 8,
+        "question": "what is the use of a certificate?",
+        "answer": "a certificate ensures the autheticity of the server",
+        "pic": ""
+      },
+      {
+        "id": 9,
+        "question": "SSL and TLS protocol",
+        "answer": "to do secure communication over TCP layer we can use SSL/ TLS protocol\nTLS is an upgraded version of SSL",
+        "pic": ""
+      },
+      {
+        "id": 10,
+        "question": "HTTPS protocol",
+        "answer": "we can run a number of protocols on top of ssl/tls, such as LDAP, HTTP, POP, IMAP etc.\nif we use http over ssl, it becomes https protocol.",
+        "pic": ""
+      },
+      {
+        "id": 11,
+        "question": "how a server can prove its identity?\n(client has connected to the right server as it needs to send its symmetric key)",
+        "answer": "certificates",
+        "pic": ""
+      },
+      {
+        "id": 13,
+        "question": "hashing",
+        "answer": "an algo that takes text into a code\n- length of code depending upon the algo (MD5, SHA1, SHA2)\nproperties: \n- one way algorithm\n- same text produces the same hash\n- slightest change completely changes the hash, ensures integrity",
+        "pic": ""
+      },
+      {
+        "id": 14,
+        "question": "compare different hashing algos",
+        "answer": "MD5 Message Digest\n- 128 bits, 2 different strings can result into same hashcode (collision)\nSHA-1 - 160bits -> outdated\nSHA2: \n- 256 bits, 512 bits\n- increase in bits reduces performance\nSHA3 -> not popular yet",
+        "pic": ""
+      },
+      {
+        "id": 15,
+        "question": "digital signatures - signing and verification",
+        "answer": "- validate integrity of a message or a document\nsigning:\n- hash data, and encrypt the hash code using signer's private key\n- take the document and attach the signature (this is the digitally signed document)\n- remember we are only encrypting the hash and not the document itself\n- also a certificate is attached to the document (to transfer public key)\nverification:\n- split into content and encrypted hash\n- hash the content\n- decrypt the signature using the signer's public key, which will generate the code\n- if the decryption was possible, we ensure that it was the right author\n- compare the hash codes, both should be equal for untampered data",
+        "pic": ""
+      },
+      {
+        "id": 16,
+        "question": "digital certificates",
+        "answer": "share public key with the world in a trusted manner\n- a client should be able to verify the owner\n- certificates are not a mechanism, they're transferred over SSL/TLS, but a document\n- issued by certificate authority\n- need to provide our identifying information and public key, and validatiy period\n- CA uses its own private key to digitally sign the document\n- this certificate is put on a website\n- client can download the certificate\n- for the root certifying authorities, their public keys are pre-installed in our operating systems\n- so now the client can use the CA's public key to digitally verify the signed certificate, thus ensuring that the certificate content (identity info and the public key)",
+        "pic": ""
+      },
+      {
+        "id": 17,
+        "question": "chain of trust of CAs",
+        "answer": "all certificates are not signed by root CA, we have a hierarchy\n- if a tier-2 CA signs a certificate for your server, the client will first download the intermediate certificate for tier-2 CA, which in turn downloads the root CA\n- the root CA's certificate is self signed.",
+        "pic": ""
+      },
+      {
+        "id": 18,
+        "question": "TLS/SSL handshake process?",
+        "answer": "process of creating tls/ssl connection is called handshake\n- the client sends a hello, along with the encryption algo it supports\n- the server responds back with its hello, certificate, and the encryption algo it supports\n- the client verifies the certificate, generates a symmetric key using the public key and sends it to the server\nnow the connection is established, they can start talking by encrypting / decrypting the data using the symmetric key they have",
+        "pic": ""
+      },
+      {
+        "id": 19,
+        "question": "how a secure network channel work in an architecture?",
+        "answer": "- TLS connection is established between the clients and the external facing load balancers.\n- that means these load balancers contain the tls certificates\n- the connection is dropped at this level and the intranet communication happens over http to gain a little bit on speed\n- we can use internal certificates if we don't trust internal communications, but gernally avoided and firewalls are used.",
+        "pic": ""
+      },
+      {
+        "id": 20,
+        "question": "firewalls",
+        "answer": "- to allow or deny from accessing our applications\n- incoming communication: ingress\n- outgoing: egress\ningress configs:\n- allow sourceIP range (block access from accessing the applications)\n- target IP range (not all applications should be visible to the incoming requests)\n- target ports can be used?\n- what protocols are allowed?\negress configs:\n- allow destination IP range (you may want some websites to be blocked from accessing from our apps)\n- target IP range ( which IPs are allowed to make requests)\n- target port (through what ports apps can access?)\n- protocol",
+        "pic": ""
+      },
+      {
+        "id": 22,
+        "question": "authentication v/s authorization",
+        "answer": "- who you are v/s what can you do\n- proving an indentity v/s provinf rights to access",
+        "pic": ""
+      },
+      {
+        "id": 23,
+        "question": "how can credentials be transferred from client to server?",
+        "answer": "- html forms / login page: input username/pass, over https + ssl/tls using http post method (human)\n- http basic: over ssl/tls, using authization header by concatenating username:pass, encoded using base64 (programmatic)\n- digest based: instead of base64, we pass hash MD5\n- certification: private/public key-based certificates exchanged",
+        "pic": ""
+      },
+      {
+        "id": 24,
+        "question": "what are the user related info needed to be stored?",
+        "answer": "- auth info: id, name, role, group...\n- user info: org, address, contact... ",
+        "pic": ""
+      },
+      {
+        "id": 25,
+        "question": "how can credentials be stored?",
+        "answer": "- db: rdbms, nosql\n- LDAP/Directory servers: ",
+        "pic": ""
+      },
+      {
+        "id": 26,
+        "question": "LDAP / Directory servers?",
+        "answer": "- hierarchical database, designed for reading, browsing, searching organization data\n- in a tree format\n- works really well for an enterprise env, where users can login using centralized LDAP servers for a variety of applications\n- e.g. Windows directory server \n- can have distribution such as different directory servers for different departments, which can be unified",
+        "pic": ""
+      },
+      {
+        "id": 27,
+        "question": "LDAP",
+        "answer": "- Lightweight Direactory Access Protocol\n- LDAP is a protocol used to access data from LDAP/ directory servers\n- high scalability and high performance for read loads",
+        "pic": ""
+      },
+      {
+        "id": 28,
+        "question": "stateful authn",
+        "answer": "- a sessionId gets created and the browser saves that ID in a cookie\n- a common session cache is used so that all instances of the application can get session information\nlimitations:\n- need sessions to be in memory, constly cache\n- authn is centralised\npro:\n- sessions can be conveniently removed from session stroage in case an ID gets compromised",
+        "pic": ""
+      },
+      {
+        "id": 29,
+        "question": "stateless authn",
+        "answer": "instead of the sessionID, a token is provided by the auth service to the client\ntoken is then sent as part of auth header\ntoken is verified by the application service by public key\npro:\n- decentralised as the verification is done by services\n- no need for cash\ncon:\n- a token is compromised, to manage that, expiry is given for a shorter duration or can maintain a cache for revoked tokens",
+        "pic": ""
+      },
+      {
+        "id": 30,
+        "question": "what are tokens?",
+        "answer": "tokens contain id, name, role etc that is signed or encrypted",
+        "pic": ""
+      },
+      {
+        "id": 31,
+        "question": "single sign on",
+        "answer": "a gateway routes the request based on if it is accompanied by a token or not\nif not, it gets routed to an auth service\nthe subsequent requests carry an auth `bearer` token",
+        "pic": ""
+      },
+      {
+        "id": 32,
+        "question": "identity?",
+        "answer": "user id",
+        "pic": ""
+      },
+      {
+        "id": 33,
+        "question": "identity group?",
+        "answer": "set of user ids",
+        "pic": ""
+      },
+      {
+        "id": 34,
+        "question": "permisssion?",
+        "answer": "allowed operations",
+        "pic": ""
+      },
+      {
+        "id": 35,
+        "question": "role?",
+        "answer": "set of permissions\nassigned to identity group",
+        "pic": ""
+      },
+      {
+        "id": 36,
+        "question": "how role based access works?",
+        "answer": "an identity group is assigned certain roles . The roles contain permissions for access to specific service(s) only. These services in turn can authorize to resources such as DB using their own credentials. ",
+        "pic": ""
+      },
+      {
+        "id": 37,
+        "question": "authz methods?",
+        "answer": "OAuth: \n- oauth grant allows clients to access a protected resource on behalf of resource owner\n- hence a different authz server is used\n- it's NOT for authn but for authz.\n- token types: Bearer, MAC\n- token format types: JWT, SAML\nAPI key:\n- used by server apps\n- access to an API is provided by requesting an API key\n- the purpose of API key is to identify the origin of a request, valid only for a domain or IP\n- doesn't matter who the user is",
+        "pic": ""
+      },
+      {
+        "id": 38,
+        "question": "outh2 token grant",
+        "answer": "- identity provider (e.g. google) authorises your identity, returns an authz code\n- the client now connects to google authorization server and in exchange of authz code, it gets a token\n- now client has access over user identity. client will connnect to google resource server to access identity on user's behalf",
+        "pic": ""
+      },
+      {
+        "id": 39,
+        "question": "oauth2 flow via authz code",
+        "answer": "step1: authorization request with redirect URL: GET /authorize?response_type=code&client_id=abc&state=xyz&redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb\n\nstep2: user authenticates, e.g. google asks \"login and this client wants to access below info\"\nstep3: sends back the authoz code\nstep4: client sends the authz code and redirection URI directly now\nstep5: gets access token",
+        "pic": ""
+      },
+      {
+        "id": 40,
+        "question": "why in the oauth2 flow authorization code is sent first, why not the token directly?",
+        "answer": "the authz code is used because the communication takes over http and the locks are saved in URI. so even if the authz code is compromised the token (which is long lived) is not.",
+        "pic": ""
+      },
+      {
+        "id": 41,
+        "question": "outh2 flow via password",
+        "answer": "there is a trust between user and client, for the services used\nstep1: credentials are passed by user to client\nstep2: now client passes the user credentials to authz server\nstep3: client receives access token that contains authz info",
+        "pic": ""
+      },
+      {
+        "id": 42,
+        "question": "oauth2 token types: bearer",
+        "answer": "bearer token:\n- it contains an access_token, token_type, expiry, and refresh_token\n- refresh_token can be used to request a new token once the token expires\n- doesn't contain the info as if who is going to use it, like a cinema ticket\n- anyone holding the token can use it\n- pro: simple to use, goto authz server, receive response, extract token and send as authz header\n- can't be used w/o TLS to preven man in the middle attack",
+        "pic": ""
+      },
+      {
+        "id": 43,
+        "question": "oauth2 token types: mac",
+        "answer": "- like an air ticket, only assigned to a user, need to show an identity which access\n- they can work without TLS, only required in the initial step while requesting access token from the authz server\n- a symmetric key is provided by the auth server when it is first issued, both the client and the server need the symmetric key\n- contains: access_token, token_type, expiry, refresh_token, mac_key (symmetric key)",
+        "pic": ""
+      },
+      {
+        "id": 44,
+        "question": "JSON web tokens",
+        "answer": "- json based\n- format: {Header}{Payload}{Signature}\n- may or may not be encrypted",
+        "pic": ""
+      },
+      {
+        "id": 45,
+        "question": "json web tokens v/s SAML",
+        "answer": "- saml is xml based",
+        "pic": ""
+      },
+      {
+        "id": 46,
+        "question": "where are tokens stored by web clients?",
+        "answer": "cookies\n- server creates cookies and sends it as part of cookie header\n- can declare them http only, so not accessible to javascript, provide safety\n- vulnerable to CSRF attack\nlocal storage\n- used by javascript, hence prone to XSS attack\n- is permanent\n- not used for tokens\nsession storage\n- not permanent, erased when browser is closed",
+        "pic": ""
+      },
+      {
+        "id": 47,
+        "question": "how single page appln store tokens",
+        "answer": "- SPAs use JS to operate, so they use local storage, which is unsafe\n- save tokens in memory and use them as long as session lasts",
+        "pic": ""
+      },
+      {
+        "id": 48,
+        "question": "how moblile applications store tokens",
+        "answer": "mobile platforms provide secret location\n- IOS uses keychain, Android uses KeyStore",
+        "pic": ""
+      },
+      {
+        "id": 50,
+        "question": "how to secure data in DBs?",
+        "answer": "hashed passwords:\n- whenever need to save sensitive information such as passwords, hash it and then save it\n- when input is entered in the login form by the user, hash that value and compare it with saved value\n- this way if the data gets leaked, only the hashed value is leaked\ntransaparent data encryption\n- the db keeps the data ecrypted on disk itself.\n- called transparent coz the user doesn't get to know about the encrypted nature of data\n- backups are protected as well\n- data is decrypted when it is loaded in memory, hence unencrypted data can be viewed through queries\n- db uses a Data Encryption Key that it keeps with itself. This key is itself encrypted, the key to decrypt it is known as master encryption key\n- the Master Encryption Key is saved separately in a key storage system.\n- the data encryption key is decrypted and then it's kept in memory, used by queries\nclient ancrypts data\n- the client/service encrypts the data before saving to db\n- the client can use the Master Encryption Key to encrypt / decrypt data\n- used when we don't want people to view data via queries, or role based viewership\n- queries can't be used to filter or directly update data\n- db optimizations not possible, performance degradation",
+        "pic": ""
+      },
+      {
+        "id": 52,
+        "question": "what is sql injection",
+        "answer": "sql injection happens when a malicious sql query is passed along with an input. If executed as it is, it can execute the malicious query as well (e.g. drop table Products;)",
+        "pic": ""
+      },
+      {
+        "id": 53,
+        "question": "how to bypass sql injection",
+        "answer": "use precompiled prepared statements which accept parameters only by ? substitution. So prepared statements use a precompiled query and only take values",
+        "pic": ""
+      },
+      {
+        "id": 54,
+        "question": "cross site scripting (XSS)",
+        "answer": "cross site scripting attack happens when an attacker submits a script along with an input, which gets saved in the database. When the same row is fetched by another user, the script is executed on the browser. this can lead to stealing of sensitive data/cookies from the users.",
+        "pic": ""
+      },
+      {
+        "id": 55,
+        "question": "how to stop XSS attack",
+        "answer": "validate the input, the web app removes XSS attack. Remove the scripting tags such as '<' etc. and replace with harmless characters",
+        "pic": ""
+      },
+      {
+        "id": 56,
+        "question": "cross site resource forgery - CSRF attack",
+        "answer": "an attacker induces user to perform actions that they don't intend to perform, e.g. change username/password, funds transfer, change email address\nwhen a user visits a malicious page, there may be login info saved in browser session. The page will then trigger the an http request to the actual site, sending the e.g. login token. The actual site may take it as a normal request and process it.",
+        "pic": ""
+      },
+      {
+        "id": 57,
+        "question": "how to avoid CSRF attack",
+        "answer": "create a csrf token that is an unpredictable value generated by the server side app. the client must include the correct csrf token along with the request. An attacker is not able to form a request on behalf of the victim",
+        "pic": ""
+      }
+    ],
+    "Fix the System Questions": [
+      {
+        "id": 2,
+        "question": "Read Heavy System",
+        "answer": "Use caching for faster needs.\nPut a cache - read from cache or read from DB",
+        "pic": ""
+      },
+      {
+        "id": 3,
+        "question": "High Write Traffic",
+        "answer": "1. Use Async Writes (requests go to worker nodes and saved to db)\n2. Use LSM Tree Database (from Memtable to SSTable)",
+        "pic": "https://miro.medium.com/v2/resize:fit:1400/format:webp/1*pkDjn_1iFa0SXqHACKwRgQ.png"
+      },
+      {
+        "id": 4,
+        "question": "Single Point of Failure",
+        "answer": "Implement Redundancy and Failover",
+        "pic": ""
+      },
+      {
+        "id": 5,
+        "question": "High Availability",
+        "answer": "1. Use load balancing\n2. Use Replication",
+        "pic": ""
+      },
+      {
+        "id": 6,
+        "question": "High Latency",
+        "answer": "Use CDN",
+        "pic": ""
+      },
+      {
+        "id": 7,
+        "question": "Handling Large Files",
+        "answer": "Use block storage and object storage",
+        "pic": ""
+      },
+      {
+        "id": 8,
+        "question": "Monitoring and Alerting",
+        "answer": "Use centralized logging solution - ELK (Logstash -> Elasticseach -> Kibana)",
+        "pic": ""
+      },
+      {
+        "id": 9,
+        "question": "Slow database queries",
+        "answer": "1. Use proper indexes\n2. Use sharding to horizontally scale ",
+        "pic": ""
+      }
+    ]
+  },
+  "lastUpdated": "30/09/2024, 10:18:23 am IST"
+}

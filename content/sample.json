@@ -1,0 +1,160 @@
+{
+    "categories_size": 3,
+    "categories_list": [
+        "topic1",
+        "topic2",
+        "topic3"
+    ],
+    "categories": {
+        "topic1": [
+            {
+                "id": 1,
+                "question": "q1",
+                "answer": "a1",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 2,
+                "question": "q2",
+                "answer": "a2",
+                "pic": "https://res.cloudinary.com/practicaldev/image/fetch/s--SV2CrLU5--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://dev-to-uploads.s3.amazonaws.com/i/2euqwipkatw4w5ar6twx.png"
+            },
+            {
+                "id": 3,
+                "question": "q3",
+                "answer": "a3",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 4,
+                "question": "q4",
+                "answer": "a4",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 5,
+                "question": "q5",
+                "answer": "a5",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 6,
+                "question": "q6",
+                "answer": "a6",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 7,
+                "question": "q7",
+                "answer": "a7",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 8,
+                "question": "q8",
+                "answer": "a8",
+                "pic": "https://example.com/abc.png"
+            }
+        ],
+        "topic2": [
+            {
+                "id": 9,
+                "question": "q9",
+                "answer": "a9",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 10,
+                "question": "q2",
+                "answer": "a2",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 11,
+                "question": "q3",
+                "answer": "a3",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 12,
+                "question": "q4",
+                "answer": "a4",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 13,
+                "question": "q5",
+                "answer": "a5",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 14,
+                "question": "q6",
+                "answer": "a6",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 15,
+                "question": "q7",
+                "answer": "a7",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 16,
+                "question": "q8",
+                "answer": "a8",
+                "pic": "https://example.com/abc.png"
+            }
+        ],
+        "topic3": [
+            {
+                "id": 17,
+                "question": "q17",
+                "answer": "a17",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 18,
+                "question": "q2",
+                "answer": "a2",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 3,
+                "question": "q3",
+                "answer": "a3",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 4,
+                "question": "q4",
+                "answer": "a4",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 5,
+                "question": "q5",
+                "answer": "a5",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 6,
+                "question": "q6",
+                "answer": "a6",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 7,
+                "question": "q7",
+                "answer": "a7",
+                "pic": "https://example.com/abc.png"
+            },
+            {
+                "id": 8,
+                "question": "q8",
+                "answer": "a8",
+                "pic": "https://example.com/abc.png"
+            }
+        ]
+    }
+}
