@@ -1,5 +1,6 @@
 {
   "status": 200,
+  "lastUpdated": "02/10/2024, 02:29:40 pm IST",
   "categories_size": 7,
   "categories_list": [
     "Performance",
@@ -1573,6 +1574,5 @@
         "pic": ""
       }
     ]
-  },
-  "lastUpdated": "02/10/2024, 01:48:58 pm IST"
+  }
 }
