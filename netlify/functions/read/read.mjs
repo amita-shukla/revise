@@ -96,7 +96,7 @@ const generateJson = async (id, key, saveToFile) => {
 
         if(saveToFile) {
             const jsonString = JSON.stringify(data, null, 2);
-            fs.writeFileSync('content/data.json', jsonString);
+            fs.writeFileSync('data.json', jsonString);
             console.log('file saved');
         }
         
