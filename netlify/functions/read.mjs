@@ -1,5 +1,5 @@
-import fetch from 'undici';
-import fs from 'fs/promises';
+import { fetch } from 'undici';
+import fs from 'fs';
 import dotenv from 'dotenv';
 
 const MAX_ROW = 200;
@@ -115,7 +115,7 @@ export default async function handler(req, context) {
         const spreadsheetId = Netlify.env.get("GOOGLE_SHEETS_SPREADSHEET_ID");
         const apiKey = Netlify.env.get("GOOGLE_SHEETS_API_KEY");
         const jsonData = await generateJson(spreadsheetId, apiKey, true);
-        return new Response(jsonData, {
+        return new Response(JSON.stringify(jsonData), {
             headers: {
                 "content-type": "text/event-stream"
             }
