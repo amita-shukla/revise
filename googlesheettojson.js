@@ -61,7 +61,7 @@ const getTimeInIST = () => {
     });
 }
 
-const generateJson = async () => {
+const generateJson = async (saveToFile) => {
     try {
         const spreadsheetID = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
         const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
@@ -86,19 +86,26 @@ const generateJson = async () => {
         const lastUpdated = getTimeInIST();
 
         const data = { 
+            status: 200,
+            lastUpdated: lastUpdated,
             categories_size: sheetNames.length, 
             categories_list: sheetNames,
-            categories: Object.assign({}, ...categories),
-            lastUpdated: lastUpdated
+            categories: Object.assign({}, ...categories)
         };
 
-        const jsonString = JSON.stringify(data, null, 2);
-        fs.writeFileSync('content/data.json', jsonString);
-        console.log('file saved');
-
+        if(saveToFile) {
+            const jsonString = JSON.stringify(data, null, 2);
+            fs.writeFileSync('content/data.json', jsonString);
+            console.log('file saved');
+        }
+        
+        return data;
     } catch (error) {
         console.error(`Error generating JSON: ${error}`);
-
+        return {
+            status: 500,
+            message: `failed to generate data. ${error}`
+        };
     }
 }
 

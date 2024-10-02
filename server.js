@@ -10,29 +10,35 @@ const PORT = 3000;
 app.use(express.static(path.join(__dirname, 'public')));
 
 // serve json file from content dir
-app.use('/content', express.static(path.join(__dirname, 'content')));
+// app.use('/content', express.static(path.join(__dirname, 'content')));
 
 // route to serve html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 })
 
-app.get('/refresh-data', (req, res) => {
-    exec('node googlesheettojson.js', (error, stdout, stderr) => {
-        if(error) {
-            console.error(`Error refreshing data: ${error}`);
-            return res.status(500).json({ message: 'Error refreshing data' });
+app.get('/refresh-data', async (req, res) => {
+    try {
+        const jsonData = await generateJson(true);
+
+        if(jsonData.status == 200){
+            console.log('data refreshed successfully');
+            res.status(200).json(jsonData);
+        } else {
+            console.error(`error refreshing data: ${jsonData.message}`);
+            res.status(500).json({message: jsonData.message});
         }
-        console.log(`data refresh output: ${stdout}`);
-        res.status(200).json({ message: 'Data refreshed successfully' });
-    });
+    } catch (error) {
+        console.error(`error refreshing data, ${error}`);
+        res.status(500).json({mesage: 'error refreshing data'});
+    }
 })
 
-generateJson().then(() => {
-    console.log(`google sheets data fetched and saved`);
-}).catch(err => {
-    console.error(`error generating json: ${err}`);
-})
+// generateJson(true).then(() => {
+//     console.log(`google sheets data fetched and saved`);
+// }).catch(err => {
+//     console.error(`error generating json: ${err}`);
+// })
 
 // Start the server
 app.listen(PORT, () => {
