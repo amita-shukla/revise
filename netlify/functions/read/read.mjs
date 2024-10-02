@@ -114,7 +114,7 @@ export default async function handler(req, context) {
     try {
         const spreadsheetId = Netlify.env.get("GOOGLE_SHEETS_SPREADSHEET_ID");
         const apiKey = Netlify.env.get("GOOGLE_SHEETS_API_KEY");
-        const jsonData = await generateJson(spreadsheetId, apiKey, true);
+        const jsonData = await generateJson(spreadsheetId, apiKey, false);
         return new Response(JSON.stringify(jsonData), {
             headers: {
                 "content-type": "text/event-stream"
